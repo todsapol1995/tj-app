@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trading Journal</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Journal">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b0f17">
+<style>
+html,body{margin:0;height:100%;background:#0b0f17;color:#e6eaf2;font:15px/1.5 -apple-system,"Noto Sans Thai",sans-serif}
+iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#0b0f17;padding-top:env(safe-area-inset-top)}
+#setup{display:none;padding:calc(env(safe-area-inset-top) + 40px) 20px 20px;max-width:520px;margin:0 auto}
+input{width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #232c42;background:#121826;color:#e6eaf2;font-size:16px}
+button{margin-top:12px;padding:12px 18px;border-radius:10px;border:0;background:#6ea8fe;color:#08111f;font-weight:600;font-size:16px}
+.mu{color:#8b95ab;font-size:13px}.er{color:#f0616d}
+</style>
+</head>
+<body>
+<div id="setup">
+  <h2>Trading Journal</h2>
+  <p>วางลิงก์เว็บแอป (ที่ลงท้าย <code>/exec?k=...</code>) ครั้งแรกครั้งเดียว ระบบจะจำไว้ในเครื่องนี้เท่านั้น</p>
+  <input id="u" placeholder="https://script.google.com/macros/s/.../exec?k=..." autocapitalize="off" autocorrect="off">
+  <div id="e" class="er"></div>
+  <button id="go">บันทึกและเปิด</button>
+  <p class="mu">ถ้าต้องการเปลี่ยนลิงก์ภายหลัง ให้เปิดหน้านี้ด้วย <code>#reset</code> ต่อท้าย</p>
+</div>
+<script>
+var K = 'tj_url';
+function get(){ try { return localStorage.getItem(K) || ''; } catch (e) { return ''; } }
+function set(v){ try { localStorage.setItem(K, v); } catch (e) {} }
+function del(){ try { localStorage.removeItem(K); } catch (e) {} }
+if (location.hash === '#reset') { del(); history.replaceState(null, '', location.pathname); }
+function open_(u){
+  document.getElementById('setup').style.display = 'none';
+  var f = document.createElement('iframe');
+  f.src = u; f.allow = 'clipboard-write';
+  document.body.appendChild(f);
+}
+var cur = get();
+if (cur) open_(cur);
+else {
+  document.getElementById('setup').style.display = 'block';
+  document.getElementById('go').onclick = function(){
+    var v = document.getElementById('u').value.trim();
+    if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\s]+\/exec/.test(v)) {
+      document.getElementById('e').textContent = 'ลิงก์ไม่ถูกต้อง ต้องขึ้นต้น https://script.google.com/macros/s/ และมี /exec';
+      return;
+    }
+    set(v); open_(v);
+  };
+}
+</script>
+</body>
+</html>
